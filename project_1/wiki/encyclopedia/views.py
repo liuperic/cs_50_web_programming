@@ -14,7 +14,17 @@ class NewPageForm(forms.Form):
 
 
 def index(request):
+    entries = util.list_entries()
 
+    if request.method == "POST":
+        pageform = NewPageForm(request.POST)
+
+        if pageform.is_valid():
+            page = pageform.cleaned_data["page"]
+
+            
+
+    
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
