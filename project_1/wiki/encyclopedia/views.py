@@ -5,36 +5,64 @@ from . import util
 
 from markdown2 import Markdown
 
-mark_down = Markdown()
+markdown = Markdown()
 
 
 class NewPageForm(forms.Form):
-    page = forms.CharField(label="New Page")
+    page = forms.CharField(label="new page")
     textbody = forms.CharField(widget=forms.Textarea(), label="textbody")
+
+class Search(forms.Form):
+    search = forms.CharField(label="search")
 
 
 def index(request):
     entries = util.list_entries()
+    queries = []
 
     if request.method == "POST":
-        pageform = NewPageForm(request.POST)
+        queried = Search(request.POST)
 
-        if pageform.is_valid():
-            page = pageform.cleaned_data["page"]
+        if queried.is_valid():
+            query = queried.cleaned_data["search"]
 
-            
+            for title in entries:
+                if query in entries:
+                    entry = util.get_entry(query)
+                    markdown_entry = markdown.convert(entry)
 
+                    content = {
+                        "title": title,
+                        "entry": markdown_entry,
+                        "queried": Search()
+                    }
+
+                    return render(request, "encyclopedia/entry.html", content)
+                
+                if query.lower() in title.lower():
+                    queries.append(title)
+                    content = {
+                        "queries": queries,
+                    }
+
+            return render(request, "encyclopedia/search.html", content)
+
+        else: 
+            return render(request, "encyclopedia/index.html", {
+                "queried": Search()
+            })
     
-    return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries()
-    })
+    else:
+        return render(request, "encyclopedia/index.html", {
+            "entries": util.list_entries(), "queried": Search()
+        })
 
 def entry(request, title):
     entries = util.list_entries()
     
     if title in entries:
         entry = util.get_entry(title)
-        markdown_entry = mark_down.convert(entry)
+        markdown_entry = markdown.convert(entry)
 
         content = { 
             "title": title,
