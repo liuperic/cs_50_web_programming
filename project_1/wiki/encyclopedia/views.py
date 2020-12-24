@@ -19,6 +19,7 @@ class Search(forms.Form):
 def index(request):
     entries = util.list_entries()
     queries = []
+    content = {}
 
     if request.method == "POST":
         queried = Search(request.POST)
@@ -42,7 +43,8 @@ def index(request):
                 if query.lower() in title.lower():
                     queries.append(title)
                     content = {
-                        "queries": queries
+                        "queries": queries,
+                        "queried": Search()
                     }
 
             return render(request, "encyclopedia/search.html", content)
@@ -66,7 +68,8 @@ def entry(request, title):
 
         content = { 
             "title": title,
-            "entry": markdown_entry
+            "entry": markdown_entry,
+            "queried": Search()
         }
         return render(request, "encyclopedia/entry.html", content)
     

@@ -11,6 +11,8 @@
         <ul>
             {% for result in queries %}
                 <li><a href=/wiki/{{ result }}>{{ result }}</li>
+                {% empty %}
+                    <h6>No search results found.</h6>
             {% endfor %}
         </ul>
     </div>
