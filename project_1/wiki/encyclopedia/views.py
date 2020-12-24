@@ -59,6 +59,7 @@ def index(request):
             "entries": util.list_entries(), "queried": Search()
         })
 
+
 def entry(request, title):
     entries = util.list_entries()
     
@@ -74,4 +75,8 @@ def entry(request, title):
         return render(request, "encyclopedia/entry.html", content)
     
     else:
-        return render(request, "encyclopedia/error.html")
+        return render(request, "encyclopedia/error.html", {
+            "message": "The requested page was not found."
+        })
+
+
