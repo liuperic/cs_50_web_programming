@@ -42,7 +42,7 @@ def index(request):
                 if query.lower() in title.lower():
                     queries.append(title)
                     content = {
-                        "queries": queries,
+                        "queries": queries
                     }
 
             return render(request, "encyclopedia/search.html", content)
