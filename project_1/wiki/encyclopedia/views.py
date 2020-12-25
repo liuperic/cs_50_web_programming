@@ -10,7 +10,7 @@ markdown = Markdown()
 
 class NewPageForm(forms.Form):
     page = forms.CharField(label="new page")
-    textbody = forms.CharField(widget=forms.Textarea(), label="textbody")
+    textbody = forms.CharField(widget=forms.Textarea(attrs={'style': 'width: 70% !important; height: 50vh;'}), label="textbody")
 
 class Search(forms.Form):
     search = forms.CharField(label="search")
@@ -80,3 +80,31 @@ def entry(request, title):
         })
 
 
+def create(request):
+    if request.method == "POST":
+        form = NewPageForm(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data["page"]
+            textbody = form.cleaned_data["textbody"]
+
+            entries = util.list_entries()
+            if title in entries:
+                return render(request, "encyclopedia/error.html", {
+                    "message": "The entry already exists."
+                })
+            
+            util.save_entry(title, textbody)
+            entry = util.get_entry(title)
+            markdown_entry = markdown.convert(entry)
+
+            content = {
+                "title": title,
+                "entry": markdown_entry
+            }
+
+            return render(request, "encyclopedia/entry.html", content)   
+    else:
+        return render(request, "encyclopedia/create.html", {
+            "form": NewPageForm()
+        })
