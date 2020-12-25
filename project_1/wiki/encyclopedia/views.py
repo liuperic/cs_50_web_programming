@@ -15,6 +15,9 @@ class NewPageForm(forms.Form):
 class Search(forms.Form):
     search = forms.CharField(label="search")
 
+class Edit(forms.Form):
+    textbody = forms.CharField(widget=forms.Textarea(attrs={'style': 'width: 70% !important; height: 50vh;'}), label='')
+
 
 def index(request):
     entries = util.list_entries()
@@ -108,3 +111,33 @@ def create(request):
         return render(request, "encyclopedia/create.html", {
             "form": NewPageForm()
         })
+
+
+def edit(request, title):
+    if request.method == "POST":
+        form = Edit(request.POST)
+
+        if form.is_valid():
+            textbody = form.cleaned_data["textbody"]
+            util.save_entry(title, textbody)
+            entry = util.get_entry(title)
+            markdown_entry = markdown.convert(entry)
+
+            content = {
+                "queried": Search(),
+                "title": title,
+                "entry": markdown_entry
+            }
+
+            return render(request, "encyclopedia/entry.html", content)
+    
+    else:
+        entry = util.get_entry(title)
+
+        content = {
+            "queried": Search(),
+            "edit": Edit(initial={"textbody": entry}),
+            "title": title
+        }
+
+        return render(request, "encyclopedia/edit.html", content)
