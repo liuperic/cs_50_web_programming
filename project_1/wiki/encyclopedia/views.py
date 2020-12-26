@@ -5,6 +5,8 @@ from . import util
 
 from markdown2 import Markdown
 
+import random
+
 markdown = Markdown()
 
 
@@ -141,3 +143,20 @@ def edit(request, title):
         }
 
         return render(request, "encyclopedia/edit.html", content)
+
+
+def random_page(request):
+    if request.method == "GET":
+        entries = util.list_entries()
+        title = random.choice(entries)
+
+        entry = util.get_entry(title)
+        markdown_entry = markdown.convert(entry)
+
+        content = {
+            "queried": Search(),
+            "title": title,
+            "entry": markdown_entry
+        }
+
+        return render(request, "encyclopedia/entry.html", content)
