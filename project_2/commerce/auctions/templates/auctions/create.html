@@ -1,5 +1,11 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    <form method="post", action="{% url 'create' %}">
+        {% csrf_token %}
+        <h1>Create Auction Listing</h1>
+        <br>
+        {{ forms.as_p }}
+    </form>
 
 {% endblock %}
