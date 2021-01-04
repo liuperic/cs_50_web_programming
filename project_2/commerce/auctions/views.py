@@ -61,3 +61,15 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+def create(request):
+    if request.method == "POST":
+        user = request.user
+        if user.id is None:
+            return HttpResponseRedirect("auctions/login.html")
+        
+        return HttpResponseRedirect("auctions/index.html")
+    
+    else:
+        return HttpResponseRedirect("auctions/create.html")
